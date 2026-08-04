@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courdavault Ostéopathe — Sport, entreprise & suivi individualisé</title>
+<meta name="description" content="Cabinet d'ostéopathie Courdavault. Ostéopathe et ancien sportif de haut niveau, accompagnement sportif, interventions en entreprise et suivis individualisés. Prise de rendez-vous en ligne rapide.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+  :root{
+    --mint:#5FE7CE;
+    --blue:#2F6FED;
+    --blue-deep:#1B4FC4;
+    --deep:#0F2E4A;
+    --bg:#F7FBFA;
+    --stone:#F2ECE1;
+    --text:#16324A;
+    --muted:#5B7C8D;
+    --line:#DCE7E6;
+    --white:#FFFFFF;
+    --grad: linear-gradient(135deg,#6EE7D0 0%, #3E8CF0 60%, #2F6FED 100%);
+    --radius: 18px;
+    --shadow: 0 20px 50px -25px rgba(15,46,74,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Manrope', sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    color:var(--deep);
+    margin:0 0 .5em;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0 0 1em;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  .eyebrow{
+    font-family:'Manrope',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.72rem;
+    font-weight:700;
+    color:var(--blue);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px;height:1px;background:var(--blue);
+  }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:15px 28px;
+    border-radius:100px;
+    font-weight:700;
+    font-size:.95rem;
+    cursor:pointer;
+    border:none;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background:var(--grad);
+    color:var(--white);
+    box-shadow:0 14px 30px -10px rgba(47,111,237,0.55);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 36px -10px rgba(47,111,237,0.65);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--deep);
+    border:1.5px solid var(--line);
+  }
+  .btn-ghost:hover{border-color:var(--blue);color:var(--blue);}
+  .btn-light{
+    background:rgba(255,255,255,.14);
+    color:var(--white);
+    border:1.5px solid rgba(255,255,255,.5);
+  }
+  .btn-light:hover{background:rgba(255,255,255,.24);}
+
+  /* HEADER */
+  header{
+    position:sticky;top:0;z-index:1010;
+    background:rgba(247,251,250,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 24px;max-width:1180px;margin:0 auto;
+    position:relative;
+  }
+  .brand{display:flex;align-items:center;gap:12px;z-index:101;}
+  .brand img{width:46px;height:46px;border-radius:50%;transition:width .2s, height .2s;}
+  .brand .name{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;color:var(--deep);line-height:1.1;}
+  .brand .sub{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .nav-links{display:flex;gap:30px;align-items:center;}
+  .nav-links a{font-size:.92rem;font-weight:600;color:var(--text);opacity:.8;transition:opacity .2s, color .2s;}
+  .nav-links a:hover{opacity:1;color:var(--blue);}
+  .nav-cta{display:flex;align-items:center;gap:14px;z-index:101;}
+  .nav-phone{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:6px;}
+  .burger{
+    display:none;background:none;border:none;cursor:pointer;padding:8px;
+    z-index:101;position:relative;
+  }
+  .burger span{
+    display:block;width:24px;height:2px;background:var(--deep);margin:5px 0;
+    transition:transform .3s ease, opacity 0.3s ease;
+  }
+
+  /* Menu burger open state */
+  .menu-open .burger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .menu-open .burger span:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-open .burger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* HERO */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    padding:70px 0 0;
+    background:linear-gradient(180deg,#EAF7F4 0%, #F7FBFA 55%);
+  }
+  .hero-inner{
+    max-width:1180px;margin:0 auto;padding:40px 24px 0;
+    display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(2.2rem, 4vw, 3.4rem);
+    line-height:1.05;
+    margin-bottom:22px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    background:var(--grad);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero p.lead{font-size:1.12rem;color:var(--muted);max-width:480px;margin-bottom:30px;}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px;}
+  .hero-trust{display:flex;gap:22px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);font-weight:600;}
+  .hero-trust span{display:flex;align-items:center;gap:7px;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .hero-visual{
+    position:relative;
+    aspect-ratio:1/1.02;
+    border-radius:28px;
+    background:var(--grad);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--shadow);
+  }
+  .hero-visual img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:28px;
+  }
+  .ridge{
+    width:100%;
+    display:block;
+    margin-top:50px;
+  }
+
+  /* TRUST BAR */
+  .trustbar{
+    background:var(--deep);
+    color:#fff;
+    padding:22px 0;
+  }
+  .trustbar .wrap{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;
+  }
+  .trustbar .item{
+    display:flex;align-items:center;gap:12px;font-size:.9rem;font-weight:600;flex:1 1 220px;
+  }
+  .trustbar .item .ic{
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(255,255,255,.12);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+
+  section{padding:96px 0;}
+  .section-head{max-width:640px;margin-bottom:56px;}
+  .section-head.center{margin-left:auto;margin-right:auto;text-align:center;}
+  .section-head h2{font-size:clamp(1.7rem,2.6vw,2.35rem);}
+  .section-head p{color:var(--muted);font-size:1.05rem;}
+
+  /* MOTIFS */
+  .motifs-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
+  }
+  .motif-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 24px;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .motif-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:transparent;}
+  .motif-card .ic{
+    width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,#E4FBF5,#DCEBFF);
+    display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+    color:var(--blue);
+  }
+  .motif-card h3{font-size:1.02rem;margin-bottom:6px;}
+  .motif-card p{font-size:.88rem;color:var(--muted);margin-bottom:0;}
+
+  /* ABOUT */
+  .about{
+    background:var(--white);
+  }
+  .about-grid{
+    display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:center;
+  }
+  .about-photo{
+    aspect-ratio:4/5;
+    border-radius:24px;
+    background:var(--stone);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--muted);
+    font-size:.85rem;
+    text-align:center;
+    padding:20px;
+    border:1px dashed #C9BBA4;
+    position:relative;
+    overflow:hidden;
+  }
+  .about-badge{
+    position:absolute;bottom:-18px;right:-18px;
+    background:var(--grad);
+    color:#fff;
+    padding:18px 22px;border-radius:18px;
+    font-family:'Fraunces',serif;
+    box-shadow:var(--shadow);
+    text-align:center;
+    line-height:1.1;
+  }
+  .about-badge .n{font-size:1.6rem;font-weight:700;display:block;}
+  .about-badge .l{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;}
+  .about-list{list-style:none;padding:0;margin:26px 0 30px;display:grid;gap:14px;}
+  .about-list li{display:flex;gap:12px;align-items:flex-start;font-size:.95rem;}
+  .about-list li .check{
+    width:20px;height:20px;border-radius:50%;background:var(--grad);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;
+  }
+
+  /* PROCESS - trail */
+  .process{background:var(--bg);position:relative;}
+  .trail{
+    position:relative;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+    margin-top:20px;
+  }
+  .trail::before{
+    content:"";
+    position:absolute;top:26px;left:8%;right:8%;height:2px;
+    background:repeating-linear-gradient(90deg,var(--line) 0 10px, transparent 10px 18px);
+    z-index:0;
+  }
+  .trail-step{position:relative;z-index:1;}
+  .trail-step .num{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--white);border:2px solid var(--blue);
+    color:var(--blue);font-family:'Fraunces',serif;font-weight:700;font-size:1.1rem;
+    display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+  }
+  .trail-step h3{font-size:1.02rem;margin-bottom:6px;}
+  .trail-step p{font-size:.88rem;color:var(--muted);}
+
+  /* PRICING */
+  .pricing{background:var(--white);}
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .price-card{
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:34px 28px;
+    display:flex;flex-direction:column;
+  }
+  .price-card.featured{
+    background:var(--deep);
+    color:#fff;
+    border-color:var(--deep);
+    transform:scale(1.03);
+    box-shadow:var(--shadow);
+  }
+  .price-card.featured h3, .price-card.featured .muted{color:#fff;opacity:.85;}
+  .price-card h3{font-size:1.05rem;margin-bottom:4px;}
+  .price-card .amount{font-family:'Fraunces',serif;font-size:2.3rem;font-weight:700;margin:14px 0 4px;}
+  .price-card .muted{color:var(--muted);font-size:.85rem;margin-bottom:22px;}
+  .price-card ul{list-style:none;padding:0;margin:0 0 26px;display:grid;gap:10px;font-size:.88rem;flex:1;}
+  .price-card li{display:flex;gap:8px;}
+  .price-note{margin-top:26px;font-size:.85rem;color:var(--muted);text-align:center;}
+
+  /* TESTIMONIALS */
+  .testi{background:var(--stone);}
+  .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .testi-card{
+    background:var(--white);
+    border-radius:var(--radius);
+    padding:30px 26px;
+    box-shadow:0 10px 30px -20px rgba(15,46,74,.25);
+  }
+  .stars{color:#F5A623;letter-spacing:2px;margin-bottom:14px;font-size:.95rem;}
+  .testi-card p.quote{font-size:.95rem;color:var(--text);margin-bottom:20px;}
+  .testi-who{display:flex;align-items:center;gap:12px;}
+  .testi-who .av{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--grad);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:700;font-size:.9rem;
+  }
+  .testi-who .name{font-weight:700;font-size:.88rem;}
+  .testi-who .role{font-size:.78rem;color:var(--muted);}
+
+  /* LOCATION */
+  .location{background:var(--white);}
+  .loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:stretch;}
+  .loc-info{display:flex;flex-direction:column;gap:22px;}
+  .loc-item{display:flex;gap:16px;}
+  .loc-item .ic{
+    width:42px;height:42px;border-radius:12px;background:var(--stone);
+    display:flex;align-items:center;justify-content:center;color:var(--blue);flex-shrink:0;
+  }
+  .loc-item h4{margin:0 0 4px;font-size:.98rem;font-family:'Manrope',sans-serif;font-weight:700;}
+  .loc-item p{margin:0;color:var(--muted);font-size:.9rem;}
+  table.hours{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:4px;}
+  table.hours td{padding:6px 0;border-bottom:1px solid var(--line);}
+  table.hours td:last-child{text-align:right;font-weight:700;}
+  .map-box{
+    border-radius:var(--radius);
+    overflow:hidden;
+    min-height:400px;
+    background:var(--stone);
+    position:relative;
+    border:1px solid var(--line);
+  }
+
+  /* Custom Leaflet Pin Styling */
+  .custom-pin-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .pin-marker {
+    position: absolute;
+    z-index: 2;
+    filter: drop-shadow(0 3px 5px rgba(15,46,74,0.3));
+    transition: transform 0.2s ease;
+  }
+  .pin-marker svg path {
+    fill: var(--blue);
+  }
+  .pin-marker:hover {
+    transform: scale(1.15);
+  }
+  .pin-pulse {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(95, 231, 206, 0.4);
+    animation: pinPulse 2s infinite ease-out;
+    z-index: 1;
+  }
+  @keyframes pinPulse {
+    0% {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+
+  /* Leaflet custom popup styling */
+  .leaflet-popup-content-wrapper {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 12px;
+    font-family: 'Manrope', sans-serif;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+  .leaflet-popup-content {
+    margin: 4px;
+  }
+  .leaflet-popup-tip {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: none;
+  }
+  .map-popup-content h3 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+    font-family: 'Fraunces', serif;
+    color: var(--deep);
+  }
+  .map-popup-content p {
+    margin: 0 0 12px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Hero Slideshow styling */
+  .hero-slideshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 28px;
+    overflow: hidden;
+  }
+  .hero-slideshow .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+  }
+  .hero-slideshow .slide.active {
+    opacity: 1;
+  }
+
+  /* FAQ */
+  .faq{background:var(--bg);}
+  .faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px;}
+  .faq-item{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .faq-q{
+    width:100%;text-align:left;background:none;border:none;cursor:pointer;
+    padding:20px 24px;font-family:'Manrope',sans-serif;font-weight:700;font-size:.98rem;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--deep);
+  }
+  .faq-q .plus{
+    width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    transition:transform .25s ease;
+    font-size:.9rem;
+  }
+  .faq-item.open .faq-q .plus{transform:rotate(45deg);border-color:var(--blue);color:var(--blue);}
+  .faq-a{
+    max-height:0;overflow:hidden;transition:max-height .3s ease;
+  }
+  .faq-a p{padding:0 24px 20px;color:var(--muted);font-size:.92rem;margin:0;}
+
+  /* FINAL CTA */
+  .final-cta{
+    background:var(--grad);
+    color:#fff;
+    text-align:center;
+    padding:90px 0;
+    position:relative;
+    overflow:hidden;
+  }
+  .final-cta h2{color:#fff;font-size:clamp(1.8rem,3vw,2.6rem);max-width:640px;margin:0 auto 16px;}
+  .final-cta p{color:rgba(255,255,255,.9);max-width:520px;margin:0 auto 34px;font-size:1.05rem;}
+  .final-cta .ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+
+  /* FOOTER */
+  footer{background:var(--deep);color:rgba(255,255,255,.75);padding:60px 0 30px;font-size:.88rem;}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+  .foot-brand{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .foot-brand img{width:40px;height:40px;border-radius:50%;}
+  .foot-brand .name{color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;}
+  footer h5{color:#fff;font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;margin:0 0 16px;}
+  footer ul{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  footer a:hover{color:#fff;}
+  .foot-bottom{
+    border-top:1px solid rgba(255,255,255,.12);
+    padding-top:24px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-size:.8rem;color:rgba(255,255,255,.5);
+  }
+
+  /* MOBILE STICKY CTA */
+  .mobile-cta{
+    display:none;
+    position:fixed;bottom:0;left:0;right:0;z-index:200;
+    background:var(--white);
+    border-top:1px solid var(--line);
+    padding:12px 16px;
+    box-shadow:0 -10px 30px -15px rgba(15,46,74,.25);
+    gap:10px;
+  }
+  .mobile-cta .btn{flex:1;padding:13px 10px;font-size:.88rem;}
+
+  [data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease;}
+  [data-reveal].in{opacity:1;transform:none;}
+
+  @media (max-width: 980px) {
+    /* Header & Navigation mobile layout */
+    .burger {
+      display: block;
+    }
+    .nav-links {
+      position: fixed;
+      top: 74px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--white);
+      flex-direction: column;
+      padding: 40px 24px;
+      gap: 24px;
+      border-top: 1px solid var(--line);
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      z-index: 99;
+      height: calc(100vh - 74px);
+      overflow-y: auto;
+    }
+    .menu-open .nav-links {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .menu-open {
+      overflow: hidden;
+    }
+    .nav-phone {
+      display: none;
+    }
+
+    /* Layout adjustments for tablet */
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .hero-visual {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .trustbar .wrap {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px 24px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .trustbar .item {
+      justify-content: flex-start;
+    }
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .about-photo {
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .trail {
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: 36px;
+    }
+    .trail::before {
+      display: none;
+    }
+
+    /* Pricing & Testimonials */
+    .price-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .price-card {
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .price-card.featured {
+      transform: none;
+    }
+    .testi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .testi-card:last-child {
+      grid-column: span 2;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Cabinet & Footer */
+    .loc-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .foot-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .nav-cta {
+      display: none;
+    }
+    .mobile-cta {
+      display: flex;
+    }
+    body {
+      padding-bottom: 78px;
+    }
+    section {
+      padding: 64px 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .testi-grid {
+      grid-template-columns: 1fr;
+    }
+    .testi-card:last-child {
+      grid-column: auto;
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 580px) {
+    .motifs-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .foot-bottom {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+    .foot-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .trail {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .brand img {
+      width: 38px;
+      height: 38px;
+    }
+    .brand .name {
+      font-size: 0.95rem;
+    }
+    .brand .sub {
+      font-size: 0.6rem;
+    }
+    .nav {
+      padding: 10px 16px;
+    }
+    .nav-links {
+      top: 59px;
+      height: calc(100vh - 59px);
+    }
+    .trustbar .wrap {
+      grid-template-columns: 1fr;
+      max-width: 320px;
+      margin: 0 auto;
+      justify-items: start;
+    }
+    .trustbar .item {
+      padding-left: 0;
+    }
+    .hero h1 {
+      font-size: clamp(1.7rem, 6vw, 2.2rem);
+    }
+    section {
+      padding: 48px 0;
+    }
+    .faq-q {
+      padding: 16px 20px;
+      font-size: 0.92rem;
+    }
+    .faq-a p {
+      padding: 0 20px 16px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="#top" class="brand">
+      <img src="images/Logo.jpg" alt="Logo Courdavault Ostéopathe">
+      <div>
+        <div class="name">Mathis Courdavault</div>
+        <div class="sub">Ostéopathe D.O.</div>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="#motifs">Consultations</a>
+      <a href="#apropos">Le praticien</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#avis">Avis</a>
+      <a href="#cabinet">Cabinet</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Prendre rendez-vous</a>
+    </div>
+    <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" style="padding-top:0;">
+    <div class="hero-inner">
+      <div data-reveal>
+        <div class="eyebrow">Ostéopathe à Seyssins. Spécialisé dans le sport.</div>
+        <h1>Spécialisé dans la prise en charge des sportifs et des douleurs musculo-squelettiques</h1>
+        <p class="lead">Soulagez vos douleurs, retrouvez votre mobilité et reprenez votre activité physique en toute confiance grâce à un accompagnement personnalisé par un ostéopathe, ancien sportif de haut niveau.</p>
+        <div class="hero-ctas">
+          <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Prendre rendez-vous en ligne</a>
+          <a href="tel:+33781094039" class="btn btn-ghost">📞 Appeler le cabinet</a>
+        </div>
+        <div class="hero-trust">
+          <span><i class="dot"></i> Ancien sportif de haut niveau</span>
+          <span><i class="dot"></i> Spécialisé dans le sport</span>
+          <span><i class="dot"></i> Suivi individualisé</span>
+          <span><i class="dot"></i> Interventions en entreprise</span>
+        </div>
+      </div>
+      <div class="hero-visual" data-reveal>
+        <div class="hero-slideshow">
+          <img src="images/1000012375.jpg" alt="Cabinet d'Ostéopathie Mathis Courdavault - Salle de consultation 1" class="slide active">
+          <img src="images/1000012377.jpg" alt="Cabinet d'Ostéopathie Mathis Courdavault - Entrée et bureau" class="slide">
+          <img src="images/1000012639.jpg" alt="Cabinet d'Ostéopathie Mathis Courdavault - Salle de consultation 2" class="slide">
+          <img src="images/1000012640.jpg" alt="Cabinet d'Ostéopathie Mathis Courdavault - Salle de consultation 3" class="slide">
+        </div>
+      </div>
+    </div>
+
+    <svg class="ridge" viewBox="0 0 1440 90" preserveAspectRatio="none" style="height:70px;">
+      <path d="M0,90 L0,60 C120,30 220,30 340,58 C460,86 560,20 680,45 C800,70 900,32 1020,48 C1140,64 1240,34 1440,55 L1440,90 Z" fill="#EAF7F4"/>
+      <path d="M0,90 L0,68 C140,45 260,68 400,50 C540,32 660,72 800,55 C940,38 1060,66 1200,50 C1300,40 1380,48 1440,60 L1440,90 Z" fill="#F7FBFA"/>
+    </svg>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div class="trustbar">
+    <div class="wrap">
+      <div class="item"><span class="ic">🎓</span> Ostéopathe D.O.</div>
+      <div class="item"><span class="ic">🏅</span> Ancien sportif de haut niveau</div>
+      <div class="item"><span class="ic">🏃</span> Suivi personnalisé de sportif</div>
+      <div class="item"><span class="ic">🏢</span> Interventions en entreprise</div>
+    </div>
+  </div>
+
+  <!-- MOTIFS -->
+  <section id="motifs">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Consultations</div>
+        <h2>Pour qui, pour quels besoins</h2>
+        <p>Sportifs, travailleurs, enfants, adultes, seniors : chaque suivi est individualisé, pour prévenir et soulager durablement.</p>
+      </div>
+      <div class="motifs-grid">
+        <div class="motif-card" data-reveal>
+          <div class="ic">🏆</div>
+          <h3>Accompagnement sportif</h3>
+          <p>Préparation, optimisation de la performance et récupération, analyse de la gestuelle.</p>
+        </div>
+        <div class="motif-card" data-reveal>
+          <div class="ic">🎯</div>
+          <h3>Suivi individualisé</h3>
+          <p>Un programme construit avec vous, selon vos objectifs, votre activité et votre rythme de vie.</p>
+        </div>
+        <div class="motif-card" data-reveal>
+          <div class="ic">🦴</div>
+          <h3>Douleurs dos &amp; cervicales</h3>
+          <p>Lombalgies, cervicalgies, sciatiques, tensions musculaires.</p>
+        </div>
+        <div class="motif-card" data-reveal>
+          <div class="ic">🩹</div>
+          <h3>Suites de traumatisme</h3>
+          <p>Entorses, chutes, chirurgie, accidents de la route.</p>
+        </div>
+        <div class="motif-card" data-reveal>
+          <div class="ic">🧠</div>
+          <h3>Migraines &amp; tensions</h3>
+          <p>Maux de tête récurrents, troubles ORL, stress et tensions.</p>
+        </div>
+        <div class="motif-card" data-reveal>
+          <div class="ic">🍽️</div>
+          <h3>Troubles digestifs</h3>
+          <p>Ballonnements, transit irrégulier, reflux fonctionnels.</p>
+        </div>
+        <div class="motif-card" data-reveal>
+          <div class="ic">🛌</div>
+          <h3>Bilan &amp; prévention</h3>
+          <p>Consultation de routine pour entretenir votre mobilité.</p>
+        </div>
+        <div class="motif-card" data-reveal>
+          <div class="ic">🏢</div>
+          <h3>Interventions en entreprise</h3>
+          <p>Ateliers de prévention, consultations sur site, sensibilisation aux TMS et à la posture au travail.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="apropos" class="about">
+    <div class="wrap about-grid">
+      <div class="about-photo" data-reveal style="border: none;">
+        <img src="images/594292175_122101322697146810_8601106319800170935_n.jpg" alt="Mathis Courdavault, Ostéopathe D.O." style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div data-reveal>
+        <div class="eyebrow">Le praticien</div>
+        <h2>Mathis Courdavault, ostéopathe D.O.</h2>
+        <p style="color:var(--muted);">Ancien sportif de haut niveau et formé en ostéopathie du sport, je comprends les exigences de votre discipline. Je vous accompagne avec une prise en charge personnalisée pour soulager vos douleurs, prévenir les blessures et vous permettre de pratiquer votre sport en toute confiance.</p>
+        <ul class="about-list">
+          <li><span class="check">✓</span> Diplôme d'ostéopathie (D.O.)</li>
+          <li><span class="check">✓</span> Diplôme Universitaire d'Ostéopathie du Sport</li>
+          <li><span class="check">✓</span> Ancien sportif de haut niveau (connaissance approfondie de la performance et de la récupération)</li>
+          <li><span class="check">✓</span> Interventions en entreprise (prévention des TMS, ateliers ergonomie, consultations sur site)</li>
+        </ul>
+        <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Prendre rendez-vous</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process" id="deroulement">
+    <div class="wrap">
+      <div class="section-head center" data-reveal>
+        <div class="eyebrow">Votre parcours</div>
+        <h2>Le déroulement d'une séance</h2>
+        <p>Une consultation type dure environ 45 minutes, en quatre temps.</p>
+      </div>
+      <div class="trail">
+        <div class="trail-step" data-reveal>
+          <div class="num">01</div>
+          <h3>Anamnèse</h3>
+          <p>Échange sur vos symptômes, antécédents et mode de vie.</p>
+        </div>
+        <div class="trail-step" data-reveal>
+          <div class="num">02</div>
+          <h3>Bilan ostéopathique</h3>
+          <p>Identifier la cause de votre douleur.</p>
+        </div>
+        <div class="trail-step" data-reveal>
+          <div class="num">03</div>
+          <h3>Traitement manuel</h3>
+          <p>Techniques adaptées à vos besoins et votre profil.</p>
+        </div>
+        <div class="trail-step" data-reveal>
+          <div class="num">04</div>
+          <h3>Conseils personnalisés</h3>
+          <p>Exercices et recommandations pour prolonger les effets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="tarifs" class="pricing">
+    <div class="wrap">
+      <div class="section-head center" data-reveal>
+        <div class="eyebrow">Tarifs</div>
+        <p>Réglables sur place par CB, espèces ou chèque. Facture fournie pour votre mutuelle.</p>
+      </div>
+      <div class="price-grid">
+        <div class="price-card" data-reveal>
+          <h3>Suivi du sportif</h3>
+          <div class="amount">65 €</div>
+          <div class="muted">performance / récupération</div>
+          <ul>
+            <li>✓ Bilan biomécanique ciblé</li>
+            <li>✓ Approche d'ancien sportif de haut niveau</li>
+            <li>✓ Conseils d'entraînement &amp; récupération</li>
+          </ul>
+          <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Réserver</a>
+        </div>
+        <div class="price-card featured" data-reveal>
+          <h3>Consultation au cabinet</h3>
+          <div class="amount">65 €</div>
+          <div class="muted">adulte, enfant, senior</div>
+          <ul>
+            <li>✓ Séance d'environ 45 min</li>
+            <li>✓ Bilan complet + traitement</li>
+            <li>✓ Conseils personnalisés</li>
+          </ul>
+          <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-light">Réserver</a>
+        </div>
+        <div class="price-card" data-reveal>
+          <h3>Intervention entreprise</h3>
+          <div class="amount">Sur devis</div>
+          <div class="muted">ateliers / consultations sur site</div>
+          <ul>
+            <li>✓ Ateliers prévention &amp; posture</li>
+            <li>✓ Consultations individuelles sur site</li>
+            <li>✓ Formule adaptée à vos effectifs</li>
+          </ul>
+          <a href="mailto:courdavault.osteo@gmail.com" class="btn btn-ghost">Me contacter</a>
+        </div>
+      </div>
+      <p class="price-note">* Une facture vous est remise systématiquement pour votre mutuelle. L'ostéopathie est prise en charge par la majorité des mutuelles santé.</p>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="avis" class="testi">
+    <div class="wrap">
+      <div class="section-head center" data-reveal>
+        <div class="eyebrow">Avis patients</div>
+        <h2>Ce qu'en disent les patients</h2>
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap;">
+          <div style="color:#F5A623;font-size:1.4rem;letter-spacing:3px;">★★★★★</div>
+          <div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--deep);">5<span style="font-size:1rem;color:var(--muted);font-family:'Manrope',sans-serif;font-weight:600;">/5</span></div>
+          <div style="font-size:.9rem;color:var(--muted);font-weight:600;">— 11 avis Google vérifiés</div>
+        </div>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card" data-reveal>
+          <div class="stars">★★★★★</div>
+          <p class="quote">Mr Courdavault a soigné ma fille après une blessure à la cheville. Grâce à ses soins et à ses conseils, elle a pu reprendre le volley rapidement, et sans douleurs. Très professionnel et vraiment à l'écoute, je vous le recommande vivement.</p>
+          <div class="testi-who">
+            <div class="av">M</div>
+            <div><div class="name">M-C. C.</div><div class="role">Avis Google ★★★★★</div></div>
+          </div>
+        </div>
+        <div class="testi-card" data-reveal>
+          <div class="stars">★★★★★</div>
+          <p class="quote">Très bon ostéopathe, qui a su soulager mes douleurs dans le dos ! Je recommande fortement.</p>
+          <div class="testi-who">
+            <div class="av">B</div>
+            <div><div class="name">B. I.</div><div class="role">Avis Google ★★★★★</div></div>
+          </div>
+        </div>
+        <div class="testi-card" data-reveal>
+          <div class="stars">★★★★★</div>
+          <p class="quote">Suite à une mauvaise chute, Mathis Courdavault a su diminuer mes douleurs et tensions musculaires, grâce à une fine écoute. J'ai pu recevoir des conseils et des explications que je trouve importants pour accompagner le soin. J'ai retrouvé une mobilité étonnamment rapide. Merci !!</p>
+          <div class="testi-who">
+            <div class="av">A</div>
+            <div><div class="name">A-L. B.</div><div class="role">Avis Google ★★★★★</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION / RDV -->
+  <section id="cabinet">
+    <div class="wrap loc-grid">
+      <div data-reveal>
+        <div class="eyebrow">Cabinet</div>
+        <h2 id="rdv">Venir au cabinet</h2>
+        <div class="loc-info">
+          <div class="loc-item">
+            <div class="ic">📍</div>
+            <div><h4>Adresse</h4><p>30 avenue louis vicat<br>38180 Seyssins</p></div>
+          </div>
+          <div class="loc-item">
+            <div class="ic">📞</div>
+            <div><h4>Téléphone</h4><p><a href="tel:+33781094039">07 81 09 40 39</a></p></div>
+          </div>
+          <div class="loc-item">
+            <div class="ic">✉️</div>
+            <div><h4>Email</h4><p><a href="mailto:courdavault.osteo@gmail.com">courdavault.osteo@gmail.com</a></p></div>
+          </div>
+          <div class="loc-item">
+            <div class="ic">🕒</div>
+            <div style="width:100%;">
+              <h4>Horaires</h4>
+              <table class="hours">
+                <tr><td>Lundi – Vendredi</td><td>7h15 – 20h00</td></tr>
+                <tr><td>Samedi</td><td>8h00 – 13h15</td></tr>
+                <tr><td>Dimanche</td><td>Fermé</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Prendre rendez-vous en ligne</a>
+          <a href="tel:+33781094039" class="btn btn-ghost">Appeler le cabinet</a>
+        </div>
+      </div>
+      <div class="map-box" data-reveal>
+        <div id="map" style="width:100%; height:100%; min-height:400px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; z-index: 1;">
+          <div class="map-fallback" style="padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">📍</div>
+            <h3 style="margin-bottom: 5px; font-family: 'Fraunces', serif; color: var(--deep);">Cabinet d'Ostéopathie</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 20px; color: var(--muted); max-width: 280px; font-family: 'Manrope', sans-serif;">
+              30 Avenue Louis Vicat<br>38180 Seyssins
+            </p>
+            <a href="https://maps.google.com/?q=30+Avenue+Louis+Vicat+38180+Seyssins" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.85rem;">
+              Ouvrir dans Google Maps
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="faq">
+    <div class="wrap">
+      <div class="section-head center" data-reveal>
+        <div class="eyebrow">Questions fréquentes</div>
+        <h2>Tout ce qu'il faut savoir avant votre venue</h2>
+      </div>
+      <div class="faq-list" data-reveal>
+        <div class="faq-item">
+          <button class="faq-q">Faut-il une ordonnance pour consulter ?<span class="plus">+</span></button>
+          <div class="faq-a"><p>Non, l'ostéopathe est un praticien de première intention : aucune ordonnance médicale n'est nécessaire pour prendre rendez-vous.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">La consultation est-elle remboursée ?<span class="plus">+</span></button>
+          <div class="faq-a"><p>L'Assurance Maladie ne rembourse pas l'ostéopathie, mais la plupart des mutuelles prennent en charge une ou plusieurs séances par an. Une facture vous est remise systématiquement.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Combien de temps dure une séance ?<span class="plus">+</span></button>
+          <div class="faq-a"><p>Comptez environ 45 minutes pour une consultation standard.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Que dois-je apporter le jour du rendez-vous ?<span class="plus">+</span></button>
+          <div class="faq-a"><p>Une tenue souple si possible, et vos examens médicaux récents (radios, IRM) le cas échéant.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Quel délai entre deux séances ?<span class="plus">+</span></button>
+          <div class="faq-a"><p>Cela dépend de votre motif, le but étant de soulager votre douleur lors de la première séance.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="wrap">
+      <h2>Prêt(e) à retrouver votre mobilité ?</h2>
+      <p>Réservez votre créneau en quelques clics sur Doctolib, ou appelez directement le cabinet.</p>
+      <div class="ctas">
+        <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-light">Prendre rendez-vous en ligne</a>
+        <a href="tel:+33781094039" class="btn btn-light">📞 07 81 09 40 39</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">
+          <img src="images/Logo.jpg" alt="Logo Courdavault Ostéopathe">
+          <div class="name">Courdavault Ostéopathe</div>
+        </div>
+        <p>Mathis Courdavault, ostéopathe D.O. et ancien sportif de haut niveau — accompagnement sportif, interventions en entreprise et suivis individualisés.</p>
+      </div>
+      <div>
+        <h5>Cabinet</h5>
+        <ul>
+          <li><a href="#motifs">Consultations</a></li>
+          <li><a href="#apropos">Le praticien</a></li>
+          <li><a href="#tarifs">Tarifs</a></li>
+          <li><a href="#avis">Avis</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Infos pratiques</h5>
+        <ul>
+          <li><a href="#cabinet">Adresse &amp; horaires</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer">Prendre rendez-vous</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="tel:+33781094039">07 81 09 40 39</a></li>
+          <li><a href="mailto:courdavault.osteo@gmail.com">courdavault.osteo@gmail.com</a></li>
+          <li>30 avenue louis vicat, 38180 Seyssins</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Mathis Courdavault Ostéopathe — Tous droits réservés</span>
+      <span>Mentions légales · Politique de confidentialité</span>
+    </div>
+  </div>
+</footer>
+
+<div class="mobile-cta">
+  <a href="tel:+33781094039" class="btn btn-ghost">📞 Appeler</a>
+  <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Rendez-vous</a>
+</div>
+
+<script>
+  // Mobile menu toggle via class
+  const burger = document.querySelector('.burger');
+  burger.addEventListener('click', function() {
+    document.body.classList.toggle('menu-open');
+  });
+
+  // Close menu when clicking on a link
+  document.querySelectorAll('.nav-links a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      document.body.classList.remove('menu-open');
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    var q = item.querySelector('.faq-q');
+    var a = item.querySelector('.faq-a');
+    q.addEventListener('click', function(){
+      var isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(o){
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // Scroll reveal
+  var revealEls = document.querySelectorAll('[data-reveal]');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:.15});
+  revealEls.forEach(function(el){ io.observe(el); });
+
+  // Hero slideshow cycle
+  const slides = document.querySelectorAll('.hero-slideshow .slide');
+  if (slides.length > 0) {
+    let currentSlide = 0;
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 4000); // changes image every 4 seconds
+  }
+</script>
+
+<!-- Leaflet JS Library -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Exact coordinates for 30 Avenue Louis Vicat, 38180 Seyssins
+    const lat = 45.1529609;
+    const lng = 5.6825381;
+
+    // Initialize the map inside the div with id="map"
+    const map = L.map('map', {
+      center: [lat, lng],
+      zoom: 15,
+      scrollWheelZoom: false // prevents zooming when scrolling down the page
+    });
+
+    // Add CartoDB Positron Tiles (a sleek, modern tile provider using OpenStreetMap data)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(map);
+
+    // Create custom pulsing map marker icon
+    const customIcon = L.divIcon({
+      className: 'custom-pin-container',
+      html: `
+        <div class="pin-pulse"></div>
+        <div class="pin-marker">
+          <svg viewBox="0 0 24 24" width="32" height="32">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+        </div>
+      `,
+      iconSize: [40, 40],
+      iconAnchor: [20, 36],
+      popupAnchor: [0, -30]
+    });
+
+    // Prepare popup content with custom styling matching the website UI
+    const popupHTML = `
+      <div class="map-popup-content">
+        <h3>Cabinet d'Ostéopathie</h3>
+        <p><strong>Mathis Courdavault</strong><br>30 Avenue Louis Vicat<br>38180 Seyssins</p>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <a href="https://www.doctolib.fr/osteopathe/seyssins/mathis-courdavault" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="color: #fff; text-decoration: none; padding: 6px 12px; font-size: 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; height: auto;">Prendre RDV</a>
+          <a href="https://maps.google.com/?q=30+Avenue+Louis+Vicat+38180+Seyssins" target="_blank" rel="noopener noreferrer" class="btn" style="border: 1px solid var(--line); color: var(--deep); text-decoration: none; padding: 5px 11px; font-size: 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #fff; font-weight: 600;">Itinéraire</a>
+        </div>
+      </div>
+    `;
+
+    // Place marker and bind popup
+    L.marker([lat, lng], { icon: customIcon })
+      .addTo(map)
+      .bindPopup(popupHTML);
+  });
+</script>
+
+</body>
+</html>
